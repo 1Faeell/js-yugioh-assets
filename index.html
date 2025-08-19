@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Reset CSS -->
+    <link rel="stylesheet" href="src/styles/reset.css" />
+
+    <!-- Framework -->
+    <link rel="stylesheet" href="src/styles/buttons.css" />
+    <link rel="stylesheet" href="src/styles/containers_and_frames.css" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Main Style -->
+    <link rel="stylesheet" href="src/styles/main.css" />
+
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      href="src/assets/favicon/Favicon.ico"
+      type="image/x-icon"
+    />
+
+    <title>YU-GI-OH Jokenpo Edition</title>
+  </head>
+  <body>
+    <!-- Background Music -->
+    <audio id="bgm" loop>
+      <source src="src/assets/audios/egyptian_duel.mp3" type="audio/mpeg" />
+    </audio>
+
+    <!-- Background Video -->
+    <!-- <div class="bg-video">
+      <video class="video" autoplay muted loop>
+        <source src="src/assets/video/yugi.mp4" type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
+    </div> -->
+
+    <!-- Main Container -->
+    <div class="container">
+      <!-- Left Section: Score + Avatar + Card Details -->
+      <div class="container__left">
+        <div class="score-box">
+          <span id="score-points">Win: 0 | Lose: 0</span>
+        </div>
+
+        <div class="menu_avatar">
+          <img id="card-image" alt="Selected card preview" />
+        </div>
+
+        <div class="card_details">
+          <p id="card-name">...</p>
+          <p id="card-type">Selecione uma carta</p>
+        </div>
+      </div>
+
+      <!-- Right Section: Cards + Versus Area -->
+      <div class="container__right">
+        <div class="card-box__container">
+          <!-- Enemy Cards -->
+          <div class="card-box" id="computer-cards"></div>
+
+          <!-- Versus Area -->
+          <div class="card-versus__container">
+            <div class="versus-top">
+              <div class="card-infield">
+                <img
+                  id="player-field-card"
+                  alt="Player selected card"
+                  width="125"
+                  height="180"
+                />
+              </div>
+
+              <img
+                src="src/assets/icons/jokenpo0.png"
+                alt="Versus icon"
+                width="180"
+                height="180"
+                style="padding: 1rem"
+                id="versus-icon"
+              />
+
+              <div class="card-infield">
+                <img
+                  id="computer-field-card"
+                  alt="Computer selected card"
+                  width="125"
+                  height="180"
+                />
+              </div>
+            </div>
+
+            <div class="versus-bottom">
+              <button id="next-duel" class="rpgui-button" onclick="resetDuel()">
+                <!-- Texto será atualizado via JS -->
+              </button>
+            </div>
+          </div>
+
+          <!-- Player Cards -->
+          <div class="card-box" id="player-cards"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engine Script -->
+    <script src="src/scripts/engine.js" defer></script>
+  </body>
+</html>
