@@ -1,3 +1,4 @@
+// ================== STATE ==================
 const state = {
   score: {
     playerScore: 0,
@@ -24,6 +25,7 @@ const state = {
   },
 };
 
+// ================== CONFIG ==================
 const pathImages = "./src/assets/icons/";
 
 const cardData = [
@@ -53,15 +55,20 @@ const cardData = [
   },
 ];
 
+// ================== HELPERS ==================
 async function getRandomCardId() {
-  const randomIndex = Math.floor(Math.random() * cardData.length);
-  return cardData[randomIndex].id;
+  return Math.floor(Math.random() * cardData.length);
 }
 
+async function playAudio(status) {
+  const audio = new Audio(`./src/assets/audios/${status}.wav`);
+  await audio.play();
+}
+
+// ================== RENDERING ==================
 async function createCardImage(IdCard, fieldSide) {
   const cardImage = document.createElement("img");
   cardImage.setAttribute("height", "110px");
-
   cardImage.setAttribute(
     "src",
     "./src/assets/icons/jokenpo-back-Photoroom.png"
@@ -70,38 +77,66 @@ async function createCardImage(IdCard, fieldSide) {
   cardImage.classList.add("card");
 
   if (fieldSide === state.playerSides.player1) {
-    cardImage.addEventListener("mouseover", () => {
-      drawSelectCard(IdCard);
-    });
+    let touchedOnce = false;
 
     cardImage.addEventListener("click", () => {
-      setCardsField(cardImage.getAttribute("data-id"));
+      if (!touchedOnce) {
+        // Primeiro toque → apenas visualizar
+        drawSelectCard(IdCard);
+        touchedOnce = true;
+
+        // reseta caso o jogador não clique de novo
+        setTimeout(() => (touchedOnce = false), 1500);
+      } else {
+        // Segundo toque → selecionar carta
+        setCardsField(cardImage.getAttribute("data-id"));
+        touchedOnce = false;
+      }
     });
   }
 
   return cardImage;
 }
 
-async function setCardsField(cardId) {
-  await removeAllCardsImages();
+async function drawSelectCard(index) {
+  const avatar = state.cardSprites.avatar;
 
-  let computerCardId = await getRandomCardId();
+  // Troca conteúdo
+  avatar.src = cardData[index].img;
+  state.cardSprites.name.innerText = cardData[index].name;
+  state.cardSprites.type.innerText = "Attribute: " + cardData[index].type;
 
-  await ShowHiddenCardFieldsImages(true);
-
-  await hiddenCardDetails();
-
-  await drawCardsInField(cardId, computerCardId);
-
-  let duelResults = await checkDuelResults(cardId, computerCardId);
-
-  await updateScore();
-  await drawButton(duelResults);
+  // 🔄 Resetando animação
+  avatar.classList.remove("animate-appear");
+  void avatar.offsetWidth; // força reflow
+  avatar.classList.add("animate-appear");
 }
 
 async function drawCardsInField(cardId, computerCardId) {
-  state.fieldCards.player.src = cardData[cardId].img;
-  state.fieldCards.computer.src = cardData[computerCardId].img;
+  const playerCard = state.fieldCards.player;
+  const computerCard = state.fieldCards.computer;
+
+  // Atualiza imagens
+  playerCard.src = cardData[cardId].img;
+  computerCard.src = cardData[computerCardId].img;
+
+  // Remove e adiciona classe para resetar animação
+  playerCard.classList.remove("animate-scale");
+  void playerCard.offsetWidth; // força reflow
+  playerCard.classList.add("animate-scale");
+
+  computerCard.classList.remove("animate-scale");
+  void computerCard.offsetWidth; // força reflow
+  computerCard.classList.add("animate-scale");
+}
+
+async function drawButton(text) {
+  state.actions.button.innerText = text.toUpperCase();
+  state.actions.button.style.display = "block";
+}
+
+async function updateScore() {
+  state.score.scoreBox.innerText = `Win: ${state.score.playerScore} | Lose: ${state.score.computerScore}`;
 }
 
 async function ShowHiddenCardFieldsImages(isVisible) {
@@ -115,13 +150,20 @@ async function hiddenCardDetails() {
   state.cardSprites.type.innerText = "";
 }
 
-async function drawButton(text) {
-  state.actions.button.innerText = text.toUpperCase();
-  state.actions.button.style.display = "block";
-}
+// ================== GAME LOGIC ==================
+async function setCardsField(cardId) {
+  await removeAllCardsImages();
 
-async function updateScore() {
-  state.score.scoreBox.innerText = `Win: ${state.score.playerScore} | Lose: ${state.score.computerScore}`;
+  let computerCardId = await getRandomCardId();
+
+  await ShowHiddenCardFieldsImages(true);
+  await hiddenCardDetails();
+  await drawCardsInField(cardId, computerCardId);
+
+  let duelResults = await checkDuelResults(cardId, computerCardId);
+
+  await updateScore();
+  await drawButton(duelResults);
 }
 
 async function checkDuelResults(playerCardId, ComputerCardId) {
@@ -143,26 +185,14 @@ async function checkDuelResults(playerCardId, ComputerCardId) {
 
 async function removeAllCardsImages() {
   let { player1BOX, computerBOX } = state.playerSides;
-  let imgElements = computerBOX.querySelectorAll("img");
-  imgElements.forEach((img) => img.remove());
-
-  imgElements = player1BOX.querySelectorAll("img");
-  imgElements.forEach((img) => img.remove());
-}
-
-async function drawSelectCard(index) {
-  state.cardSprites.avatar.src = cardData[index].img;
-  state.cardSprites.name.innerText = cardData[index].name;
-  state.cardSprites.type.innerText = "Attribute : " + cardData[index].type;
+  player1BOX.querySelectorAll("img").forEach((img) => img.remove());
+  computerBOX.querySelectorAll("img").forEach((img) => img.remove());
 }
 
 async function drawCards(cardNumbers, fieldSide) {
   for (let i = 0; i < cardNumbers; i++) {
     const randomIdCard = await getRandomCardId();
     const cardImage = await createCardImage(randomIdCard, fieldSide);
-
-    console.log(fieldSide);
-
     document.getElementById(fieldSide).appendChild(cardImage);
   }
 }
@@ -170,18 +200,12 @@ async function drawCards(cardNumbers, fieldSide) {
 async function resetDuel() {
   state.cardSprites.avatar.src = "";
   state.actions.button.style.display = "none";
-
   state.fieldCards.player.style.display = "none";
   state.fieldCards.computer.style.display = "none";
-
   init();
 }
 
-async function playAudio(status) {
-  const audio = new Audio(`./src/assets/audios/${status}.wav`);
-  await audio.play();
-}
-
+// ================== INIT ==================
 function init() {
   state.fieldCards.player.style.display = "none";
   state.fieldCards.computer.style.display = "none";
