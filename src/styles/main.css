@@ -78,10 +78,10 @@ a:focus-visible {
   background: linear-gradient(
     360deg,
     rgba(24, 21, 39, 1) 0%,
-    rgb(83, 74, 136) 50%,
+    rgb(52, 46, 87) 50%,
     rgba(24, 21, 39, 1) 100%
   );
-  border: #8c61be 8px ridge;
+  border: rgb(187, 166, 107) 8px ridge;
   box-shadow: 0 0 20px rgba(0, 0, 0, 1);
   padding: 1rem;
 }
@@ -172,8 +172,8 @@ a:focus-visible {
   justify-content: center;
   align-items: center;
   background-color: #150f1fad;
-  border: 8px ridge #a186e9;
-  box-shadow: 0 0 15px #000;
+  border: 8px double rgb(52, 46, 87);
+  box-shadow: 0 0 15px #1f1f1f;
 }
 
 .card {
